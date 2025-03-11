@@ -1,8 +1,8 @@
-# vue-admin-template
+# Strong-admin
 
 English | [简体中文](./README-zh.md)
 
-> A minimal vue admin template with Element UI & axios & iconfont & permission control & lint
+> A minimal Strong admin with Element UI & axios & iconfont & permission control & lint
 
 **Live demo:** http://panjiachen.github.io/vue-admin-template
 

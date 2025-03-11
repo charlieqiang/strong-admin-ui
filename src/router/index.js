@@ -149,19 +149,56 @@ export const constantRoutes = [
     ]
   },
 
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+export const asyncRoutes = [
   {
-    path: 'external-link',
+    path: '/permission',
     component: Layout,
+    redirect: '/permission/page',
+    alwaysShow: true, // will always show the root menu
+    name: 'Permission',
+    meta: {
+      title: 'permission',
+      icon: 'lock',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'page',
+        component: () => import('@/views/permission/page'),
+        name: 'PagePermission',
+        meta: {
+          title: 'pagePermission',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'directive',
+        component: () => import('@/views/permission/directive'),
+        name: 'DirectivePermission',
+        meta: {
+          title: 'directivePermission'
+          // if do not set roles, means: this page does not require permission
+        }
       }
     ]
   },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  {
+    path: 'external-link',
+    component: Layout,
+    meta: {
+      roles: ['admin'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'https://github.com/charlieqiang',
+        meta: { title: 'External Link', icon: 'link' }
+      }
+    ]
+  }
 ]
 
 const createRouter = () => new Router({

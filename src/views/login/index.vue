@@ -20,7 +20,7 @@
           <svg-icon icon-class="password" />
         </span>
         <el-input :key="passwordType" ref="password" v-model="loginForm.password" :type="passwordType"
-          placeholder="Password" name="password" tabindex="2" auto-complete="on" @keyup.enter.native="handleLogin" />
+          placeholder="Password" name="password" tabindex="2" auto-complete="on" />
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
@@ -32,7 +32,7 @@
           <svg-icon icon-class="form" />
         </span>
         <el-input v-model="loginForm.captchaCode" placeholder="Captcha" name="captchaCode" tabindex="3"
-          auto-complete="off" />
+          auto-complete="off" @keyup.enter.native="handleLogin" />
 
       </el-form-item>
       <img :src="captchaImg" @click="getCaptcha" class="captcha-img" />
@@ -125,6 +125,7 @@ export default {
             this.loading = false
           }).catch(() => {
             this.loading = false
+            this.getCaptcha()
           })
         } else {
           console.log('error submit!!')
