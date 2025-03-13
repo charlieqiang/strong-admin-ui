@@ -24,60 +24,60 @@ const users = {
 
 module.exports = [
   // user login
-  // {
-  //   url: '/vue-admin-template/user/login',
-  //   type: 'post',
-  //   response: config => {
-  //     const { username } = config.body
-  //     const token = tokens[username]
+  {
+    url: '/vue-admin-template/user/login',
+    type: 'post',
+    response: config => {
+      const { username } = config.body
+      const token = tokens[username]
 
-  //     // mock error
-  //     if (!token) {
-  //       return {
-  //         code: 624,
-  //         message: 'Account and password are incorrect.'
-  //       }
-  //     }
+      // mock error
+      if (!token) {
+        return {
+          code: 624,
+          message: 'Account and password are incorrect.'
+        }
+      }
 
-  //     return {
-  //       code: 200,
-  //       data: token
-  //     }
-  //   }
-  // },
+      return {
+        code: 200,
+        data: token
+      }
+    }
+  },
 
-  // // get user info
-  // {
-  //   url: '/vue-admin-template/user/info\.*',
-  //   type: 'get',
-  //   response: config => {
-  //     const { token } = config.query
-  //     const info = users[token]
+  // get user info
+  {
+    url: '/vue-admin-template/user/info\.*',
+    type: 'get',
+    response: config => {
+      const { token } = config.query
+      const info = users[token]
 
-  //     // mock error
-  //     if (!info) {
-  //       return {
-  //         code: 508,
-  //         message: 'Login failed, unable to get user details.'
-  //       }
-  //     }
+      // mock error
+      if (!info) {
+        return {
+          code: 508,
+          message: 'Login failed, unable to get user details.'
+        }
+      }
 
-  //     return {
-  //       code: 200,
-  //       data: info
-  //     }
-  //   }
-  // },
+      return {
+        code: 200,
+        data: info
+      }
+    }
+  },
 
-  // // user logout
-  // {
-  //   url: '/vue-admin-template/user/logout',
-  //   type: 'post',
-  //   response: _ => {
-  //     return {
-  //       code: 200,
-  //       data: 'success'
-  //     }
-  //   }
-  // }
+  // user logout
+  {
+    url: '/vue-admin-template/user/logout',
+    type: 'post',
+    response: _ => {
+      return {
+        code: 200,
+        data: 'success'
+      }
+    }
+  }
 ]

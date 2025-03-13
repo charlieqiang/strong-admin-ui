@@ -1,6 +1,6 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import router, { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
@@ -94,6 +94,18 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
+  },
+
+  // dynamically modify permissions
+  async changeRoles({ commit, dispatch }, role) {
+    const { roles } = { roles: Array.isArray(role) ? role : [role] }
+    commit('SET_ROLES', roles)
+    resetRouter()
+
+    // generate accessible routes map based on roles
+    const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
+    // dynamically add accessible routes
+    router.addRoutes(accessRoutes)
   }
 }
 
