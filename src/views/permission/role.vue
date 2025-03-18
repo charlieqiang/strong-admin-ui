@@ -4,7 +4,7 @@
       Add Role
     </el-button>
 
-    <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
+    <el-table v-loading="listLoading" :data="rolesList" style="width: 100%;margin-top:30px;" border>
       <el-table-column align="center" label="Role Key" width="220">
         <template slot-scope="scope">
           {{ scope.row.key }}
@@ -85,7 +85,8 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'title'
-      }
+      },
+      listLoading: true
     }
   },
   computed: {
@@ -94,10 +95,14 @@ export default {
     }
   },
   created() {
-    this.getRoutes()
-    this.getRoles()
+    this.getList()
   },
   methods: {
+    async getList() {
+      this.listLoading = true
+      await Promise.all([this.getRoutes(), this.getRoles()])
+      this.listLoading = false
+    },
     async getRoutes() {
       const res = await getRoutes()
       this.serviceRoutes = res.data

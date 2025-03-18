@@ -196,6 +196,26 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/info',
+    alwaysShow: true,
+    name: 'User',
+    meta: {
+      title: 'User',
+      icon: 'peoples'
+    },
+    children: [
+      {
+        path: 'info',
+        component: () => import('@/views/user/info'),
+        name: 'UserInfo',
+        meta: {
+          title: 'UserInfo'
+        }
+      }]
+  },
+  {
     path: 'external-link',
     component: Layout,
     meta: {

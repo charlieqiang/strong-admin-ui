@@ -21,3 +21,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function fetchList(data, page) {
+  return request({
+    url: `/user/page/${page.pageNum}/${page.pageSize}`,
+    method: 'post',
+    data
+  })
+}
