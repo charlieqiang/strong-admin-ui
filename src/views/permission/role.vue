@@ -5,9 +5,9 @@
     </el-button>
 
     <el-table v-loading="listLoading" :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <el-table-column align="center" label="Role Key" width="220">
+      <el-table-column align="center" label="Role Code" width="220">
         <template slot-scope="scope">
-          {{ scope.row.key }}
+          {{ scope.row.code }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="Role Name" width="220">
@@ -37,8 +37,8 @@
         <el-form-item label="Name">
           <el-input v-model="role.name" placeholder="Role Name" />
         </el-form-item>
-        <el-form-item label="Key">
-          <el-input v-model="role.key" placeholder="Role Key" />
+        <el-form-item label="Code">
+          <el-input v-model="role.code" placeholder="Role Code" />
         </el-form-item>
         <el-form-item label="Desc">
           <el-input v-model="role.description" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
@@ -64,10 +64,10 @@
 <script>
 import path from 'path'
 import { deepClone } from '@/utils'
-import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role'
+import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/permission'
 
 const defaultRole = {
-  key: '',
+  code: '',
   name: '',
   description: '',
   routes: []
@@ -187,25 +187,25 @@ export default {
       if (isEdit) {
         await updateRole(this.role)
         for (let index = 0; index < this.rolesList.length; index++) {
-          if (this.rolesList[index].key === this.role.key) {
+          if (this.rolesList[index].code === this.role.code) {
             this.rolesList.splice(index, 1, Object.assign({}, this.role))
             break
           }
         }
       } else {
         const { data } = await addRole(this.role)
-        this.role.key = data.key
+        this.role.code = data.code
         this.role.id = data.id
         this.rolesList.push(this.role)
       }
 
-      const { description, key, name } = this.role
+      const { description, code, name } = this.role
       this.dialogVisible = false
       this.$notify({
         title: 'Success',
         dangerouslyUseHTMLString: true,
         message: `
-            <div>Role Key: ${key}</div>
+            <div>Role Code: ${code}</div>
             <div>Role Name: ${name}</div>
             <div>Description: ${description}</div>
           `,

@@ -11,9 +11,9 @@
                     <span>{{ row.account }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="Username" prop="name" sortable="custom" align="center">
+            <el-table-column label="Username" prop="username" sortable="custom" align="center">
                 <template slot-scope="{row}">
-                    <span>{{ row.name }}</span>
+                    <span>{{ row.username }}</span>
                 </template>
             </el-table-column>
         </el-table>
@@ -53,7 +53,7 @@
 
 <script>
 import { fetchList, addUser } from '@/api/user'
-import { getRoles } from '@/api/role'
+import { getRoles } from '@/api/permission'
 import Pagination from '@/components/Pagination'
 
 export default {

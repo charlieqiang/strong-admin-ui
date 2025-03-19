@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { getCaptcha } from '@/api/captcha'
+import { getCaptcha } from '@/api/login'
 
 export default {
   name: 'Login',
