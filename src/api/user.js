@@ -15,6 +15,14 @@ export function getInfo() {
   })
 }
 
+export function addUser(data) {
+  return request({
+    url: '/user',
+    method: 'post',
+    data
+  })
+}
+
 export function logout() {
   return request({
     url: '/auth/logout',
