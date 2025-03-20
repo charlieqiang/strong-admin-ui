@@ -36,7 +36,10 @@ export default {
       this.searchPool = this.generateRoutes(this.routes)
     },
     searchPool(list) {
-      this.initFuse(list)
+      this.addPinyinField(list).then(list => {
+        console.log(list)
+        this.initFuse(list)
+      })
     },
     show(value) {
       if (value) {
@@ -50,6 +53,29 @@ export default {
     this.searchPool = this.generateRoutes(this.routes)
   },
   methods: {
+    async addPinyinField(list) {
+      const { default: pinyin } = await import('pinyin');
+
+      if (Array.isArray(list)) {
+        list.forEach(element => {
+          const title = element.title;
+          if (Array.isArray(title)) {
+            title.forEach(v => {
+              element.pinyinTitle = pinyin(v, {
+                style: pinyin.STYLE_NORMAL
+              }).join('')
+
+              const pinyinArr = pinyin(v, {
+                style: pinyin.STYLE_NORMAL
+              }).map(item => item[0]);
+
+              element.pinyinHead = pinyinArr.map(word => word[0].toLowerCase()).join('');
+            })
+          }
+        });
+        return list;
+      }
+    },
     click() {
       this.show = !this.show
       if (this.show) {
@@ -80,6 +106,12 @@ export default {
         keys: [{
           name: 'title',
           weight: 0.7
+        }, {
+          name: 'pinyinHead',
+          weight: 0.3
+        }, {
+          name: 'pinyinTitle',
+          weight: 0.3
         }, {
           name: 'path',
           weight: 0.3
