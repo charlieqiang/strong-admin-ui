@@ -1,10 +1,27 @@
 <template>
-  <div :class="{ 'show': show }" class="header-search">
-    <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
-    <el-select ref="headerSearchSelect" v-model="search" :remote-method="querySearch" filterable default-first-option
-      remote placeholder="Search" class="header-search-select" @change="change">
-      <el-option v-for="item in options" :key="item.item.path" :value="item.item"
-        :label="item.item.title.join(' > ')" />
+  <div :class="{ show: show }" class="header-search">
+    <svg-icon
+      class-name="search-icon"
+      icon-class="search"
+      @click.stop="click"
+    />
+    <el-select
+      ref="headerSearchSelect"
+      v-model="search"
+      :remote-method="querySearch"
+      filterable
+      default-first-option
+      remote
+      placeholder="Search"
+      class="header-search-select"
+      @change="change"
+    >
+      <el-option
+        v-for="item in options"
+        :key="item.item.path"
+        :value="item.item"
+        :label="item.item.title.join(' > ')"
+      />
     </el-select>
   </div>
 </template>
@@ -37,7 +54,6 @@ export default {
     },
     searchPool(list) {
       this.addPinyinField(list).then(list => {
-        console.log(list)
         this.initFuse(list)
       })
     },
@@ -54,11 +70,11 @@ export default {
   },
   methods: {
     async addPinyinField(list) {
-      const { default: pinyin } = await import('pinyin');
+      const { default: pinyin } = await import('pinyin')
 
       if (Array.isArray(list)) {
         list.forEach(element => {
-          const title = element.title;
+          const title = element.title
           if (Array.isArray(title)) {
             title.forEach(v => {
               element.pinyinTitle = pinyin(v, {
@@ -67,13 +83,15 @@ export default {
 
               const pinyinArr = pinyin(v, {
                 style: pinyin.STYLE_NORMAL
-              }).map(item => item[0]);
+              }).map(item => item[0])
 
-              element.pinyinHead = pinyinArr.map(word => word[0].toLowerCase()).join('');
+              element.pinyinHead = pinyinArr
+                .map(word => word[0].toLowerCase())
+                .join('')
             })
           }
-        });
-        return list;
+        })
+        return list
       }
     },
     click() {
@@ -103,19 +121,24 @@ export default {
         distance: 100,
         maxPatternLength: 32,
         minMatchCharLength: 1,
-        keys: [{
-          name: 'title',
-          weight: 0.7
-        }, {
-          name: 'pinyinHead',
-          weight: 0.3
-        }, {
-          name: 'pinyinTitle',
-          weight: 0.3
-        }, {
-          name: 'path',
-          weight: 0.3
-        }]
+        keys: [
+          {
+            name: 'title',
+            weight: 0.7
+          },
+          {
+            name: 'pinyinHead',
+            weight: 0.3
+          },
+          {
+            name: 'pinyinTitle',
+            weight: 0.3
+          },
+          {
+            name: 'path',
+            weight: 0.3
+          }
+        ]
       })
     },
     // Filter out the routes that can be displayed in the sidebar
@@ -125,7 +148,9 @@ export default {
 
       for (const router of routes) {
         // skip hidden router
-        if (router.hidden) { continue }
+        if (router.hidden) {
+          continue
+        }
 
         const data = {
           path: path.resolve(basePath, router.path),
@@ -144,7 +169,11 @@ export default {
 
         // recursive child routes
         if (router.children) {
-          const tempRoutes = this.generateRoutes(router.children, data.path, data.title)
+          const tempRoutes = this.generateRoutes(
+            router.children,
+            data.path,
+            data.title
+          )
           if (tempRoutes.length >= 1) {
             res = [...res, ...tempRoutes]
           }

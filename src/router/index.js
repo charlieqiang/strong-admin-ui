@@ -47,12 +47,14 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '仪表盘', icon: 'dashboard' }
-    }]
+    children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '仪表盘', icon: 'dashboard' }
+      }
+    ]
   }
 ]
 
@@ -114,9 +116,33 @@ export const asyncRoutes = [
         component: () => import('@/views/user/info'),
         name: 'UserInfo',
         meta: {
-          title: '用户信息'
+          title: '用户信息',
+          roles: ['admin']
         }
-      }]
+      }
+    ]
+  },
+  {
+    path: '/menu',
+    component: Layout,
+    redirect: '/menu/list',
+    alwaysShow: true,
+    name: 'Menu',
+    meta: {
+      title: '菜单管理',
+      icon: 'tree-table'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/menu/index'),
+        name: 'MenuInfo',
+        meta: {
+          title: '菜单列表',
+          roles: ['admin']
+        }
+      }
+    ]
   },
   {
     path: 'external-link',
@@ -136,11 +162,12 @@ export const asyncRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 
