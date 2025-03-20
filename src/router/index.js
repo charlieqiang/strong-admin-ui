@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '仪表盘', icon: 'dashboard' }
     }]
   }
 ]
@@ -64,7 +64,7 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
     meta: {
-      title: 'Permission',
+      title: '权限管理',
       icon: 'lock',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
@@ -74,7 +74,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/page'),
         name: 'PagePermission',
         meta: {
-          title: 'PagePermission',
+          title: '页面权限',
           roles: ['admin', 'editor'] // or you can only set roles in sub nav
         }
       },
@@ -83,7 +83,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/directive'),
         name: 'DirectivePermission',
         meta: {
-          title: 'DirectivePermission'
+          title: '指令权限'
           // if do not set roles, means: this page does not require permission
         }
       },
@@ -92,7 +92,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/role'),
         name: 'RolePermission',
         meta: {
-          title: 'RolePermission',
+          title: '角色权限',
           roles: ['admin', 'editor']
         }
       }
@@ -105,7 +105,7 @@ export const asyncRoutes = [
     alwaysShow: true,
     name: 'User',
     meta: {
-      title: 'User',
+      title: '用户管理',
       icon: 'peoples'
     },
     children: [
@@ -114,7 +114,7 @@ export const asyncRoutes = [
         component: () => import('@/views/user/info'),
         name: 'UserInfo',
         meta: {
-          title: 'UserInfo'
+          title: '用户信息'
         }
       }]
   },
@@ -127,7 +127,7 @@ export const asyncRoutes = [
     children: [
       {
         path: 'https://github.com/charlieqiang',
-        meta: { title: 'External Link', icon: 'link' }
+        meta: { title: '外部链接', icon: 'link' }
       }
     ]
   },

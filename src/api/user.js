@@ -22,3 +22,10 @@ export function fetchList(data, page) {
     data
   })
 }
+
+export function deleteUser(id) {
+  return request({
+    url: `/user/${id}`,
+    method: 'delete'
+  })
+}
