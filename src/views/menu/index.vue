@@ -133,7 +133,7 @@ import {
 } from '@/api/menu'
 
 export default {
-  name: 'MenuManagement',
+  name: 'MenuList',
   data() {
     return {
       menuList: [],

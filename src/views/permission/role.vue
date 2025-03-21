@@ -95,6 +95,7 @@ const defaultRole = {
 }
 
 export default {
+  name: 'RolePermission',
   data() {
     return {
       role: Object.assign({}, defaultRole),

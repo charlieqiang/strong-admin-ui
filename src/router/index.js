@@ -52,7 +52,7 @@ export const constantRoutes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index'),
-        meta: { title: '首页', icon: 'dashboard' }
+        meta: { title: '首页', icon: 'dashboard', affix: true }
       }
     ]
   }
@@ -136,7 +136,7 @@ export const asyncRoutes = [
       {
         path: 'list',
         component: () => import('@/views/menu/index'),
-        name: 'MenuInfo',
+        name: 'MenuList',
         meta: {
           title: '菜单列表',
           roles: ['admin']

@@ -218,6 +218,13 @@ export default {
     },
     handleAddUser() {
       this.dialogType = 'new'
+      this.user = {
+        account: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
+        roleIdList: []
+      }
       this.dialogVisible = true
     },
     handleEdit(row) {
