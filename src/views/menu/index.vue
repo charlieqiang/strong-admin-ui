@@ -124,7 +124,13 @@
 </template>
 
 <script>
-import { getMenuList, addMenu, updateMenu, deleteMenu } from '@/api/menu'
+import {
+  getMenuList,
+  addMenu,
+  updateMenu,
+  deleteMenu,
+  updateMenuList
+} from '@/api/menu'
 
 export default {
   name: 'MenuManagement',
@@ -230,32 +236,74 @@ export default {
       event.dataTransfer.setData('text/plain', JSON.stringify(row))
     },
 
-    handleDrop(event, targetRow) {
+    findSameLevelMenuList(menuList, targetId) {
+      for (const menu of menuList) {
+        if (menu.children) {
+          if (menu.children.some(child => child.id === targetId)) {
+            return menu.children
+          }
+          const result = this.findSameLevelMenuList(menu.children, targetId)
+          if (result) return result
+        }
+      }
+      return null
+    },
+
+    async handleDrop(event, targetRow) {
       const sourceRow = JSON.parse(event.dataTransfer.getData('text/plain'))
       if (sourceRow.id === targetRow.id) return
 
-      const sourceIndex = this.menuList.findIndex(
-        item => item.id === sourceRow.id
-      )
-      const targetIndex = this.menuList.findIndex(
-        item => item.id === targetRow.id
+      // 获取同级菜单
+      let sameLevel = this.menuList.filter(
+        item => item.parentId === sourceRow.parentId
       )
 
-      // 计算新的排序值
-      const newSort =
-        targetIndex > sourceIndex
-          ? Math.floor(
-              (targetRow.sort +
-                (this.menuList[targetIndex + 1]?.sort || targetRow.sort + 1)) /
-                2
-            )
-          : Math.floor(
-              (targetRow.sort + (this.menuList[targetIndex - 1]?.sort || 0)) / 2
-            )
+      // 如果是二级菜单，从树形结构中查找同级菜单
+      if (sourceRow.parentId) {
+        const sameLevelMenuList = this.findSameLevelMenuList(
+          this.menuTree,
+          sourceRow.id
+        )
+        if (sameLevelMenuList) {
+          sameLevel = sameLevelMenuList
+        }
+      }
 
-      // 更新排序
-      sourceRow.sort = newSort
-      this.handleSave(sourceRow)
+      // 获取原始位置和目标位置
+      const sourceSort = sourceRow.sort
+      const targetSort = targetRow.sort
+
+      // 更新受影响的菜单项
+      const updatedMenus = sameLevel.map(item => {
+        const menu = { ...item }
+        if (item.id === sourceRow.id) {
+          menu.sort = targetSort
+        } else if (
+          sourceSort > targetSort &&
+          item.sort >= targetSort &&
+          item.sort < sourceSort
+        ) {
+          menu.sort = item.sort + 1
+        } else if (
+          sourceSort < targetSort &&
+          item.sort > sourceSort &&
+          item.sort <= targetSort
+        ) {
+          menu.sort = item.sort - 1
+        }
+        return menu
+      })
+
+      try {
+        const response = await updateMenuList(updatedMenus)
+        if (response.code === 200) {
+          this.$message.success('更新成功')
+          this.getList()
+        }
+      } catch (error) {
+        console.error('Failed to update menu sort:', error)
+        this.$message.error('更新失败')
+      }
     },
 
     async confirmMenu() {

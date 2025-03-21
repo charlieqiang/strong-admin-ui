@@ -23,6 +23,14 @@ export function updateMenu(data) {
   })
 }
 
+export function updateMenuList(data) {
+  return request({
+    url: '/menu/list',
+    method: 'put',
+    data
+  })
+}
+
 export function deleteMenu(id) {
   return request({
     url: `/menu/${id}`,

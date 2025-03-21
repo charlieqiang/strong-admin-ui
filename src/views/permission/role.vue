@@ -43,7 +43,7 @@
         <el-form-item label="名称">
           <el-input v-model="role.name" placeholder="请输入角色名称" />
         </el-form-item>
-        <el-form-item label="代码">
+        <el-form-item label="编码">
           <el-input v-model="role.code" placeholder="请输入角色编码" />
         </el-form-item>
         <el-form-item label="描述">

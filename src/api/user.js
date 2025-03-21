@@ -15,6 +15,14 @@ export function addUser(data) {
   })
 }
 
+export function updateUser(data) {
+  return request({
+    url: `/user`,
+    method: 'put',
+    data
+  })
+}
+
 export function fetchList(data, page) {
   return request({
     url: `/user/page/${page.pageNum}/${page.pageSize}`,

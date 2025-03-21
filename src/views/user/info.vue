@@ -21,8 +21,27 @@
           <span>{{ row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="150">
+      <el-table-column label="角色" align="center">
         <template slot-scope="{ row }">
+          <el-tag
+            v-for="role in row.roles"
+            :key="role"
+            style="margin-right: 5px"
+          >
+            {{ role }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="220">
+        <template slot-scope="{ row }">
+          <el-button
+            type="primary"
+            size="mini"
+            @click="handleEdit(row)"
+            style="margin-right: 10px"
+          >
+            修改
+          </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             删除
           </el-button>
@@ -42,27 +61,41 @@
       :visible.sync="dialogVisible"
       :title="dialogType === 'edit' ? '编辑用户' : '新增用户'"
     >
-      <el-form :model="user" label-width="80px" label-position="left">
-        <el-form-item label="账号">
+      <el-form
+        :model="user"
+        :rules="rules"
+        ref="userForm"
+        label-width="80px"
+        label-position="left"
+      >
+        <el-form-item label="账号" prop="account">
           <el-input v-model="user.account" placeholder="请输入账号" />
         </el-form-item>
-        <el-form-item label="用户名">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="user.username" placeholder="请输入用户名" />
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item v-if="dialogType === 'new'" label="密码" prop="password">
           <el-input
             v-model="user.password"
-            placeholder="请输入密码"
             type="password"
+            placeholder="请输入密码"
           />
         </el-form-item>
-        <el-form-item label="角色">
+        <el-form-item
+          v-if="dialogType === 'new'"
+          label="确认密码"
+          prop="confirmPassword"
+        >
+          <el-input
+            v-model="user.confirmPassword"
+            type="password"
+            placeholder="请确认密码"
+          />
+        </el-form-item>
+        <el-form-item label="角色" prop="roleIdList">
           <el-select
             v-model="user.roleIdList"
             placeholder="请选择角色"
-            @visible-change="handleRoleDropdown"
-            :loading="roleLoading"
-            loading-text="加载中..."
             multiple
           >
             <el-option
@@ -85,7 +118,7 @@
 </template>
 
 <script>
-import { fetchList, addUser, deleteUser } from '@/api/user'
+import { fetchList, addUser, deleteUser, updateUser } from '@/api/user'
 import { getRoles } from '@/api/permission'
 import Pagination from '@/components/Pagination'
 
@@ -112,31 +145,64 @@ export default {
         account: '',
         username: '',
         password: '',
+        confirmPassword: '',
         roleIdList: []
       },
-      roles: [],
-      roleLoading: false
+      rules: {
+        account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 8, message: '密码长度不能小于8位', trigger: 'blur' },
+          {
+            validator: (rule, value, callback) => {
+              if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
+                callback(new Error('密码必须包含大小写字母和数字'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
+        ],
+        confirmPassword: [
+          { required: true, message: '请确认密码', trigger: 'blur' },
+          {
+            validator: (rule, value, callback) => {
+              if (value !== this.user.password) {
+                callback(new Error('两次输入的密码不一致'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
+        ],
+        roleIdList: [
+          { required: true, message: '请选择角色', trigger: 'change' }
+        ]
+      },
+      roles: []
     }
   },
   created() {
     this.getList()
+    this.loadRoles()
   },
   methods: {
-    async handleRoleDropdown(visible) {
-      // 避免重复请求
-      if (visible && this.roles.length === 0) {
-        this.roleLoading = true
-        try {
-          const response = await getRoles()
+    loadRoles() {
+      getRoles()
+        .then(response => {
           if (response.code === 200) {
             this.roles = response.data
           }
-        } catch (error) {
+        })
+        .catch(error => {
           console.error('Failed to fetch roles:', error)
-        } finally {
-          this.roleLoading = false
-        }
-      }
+          this.$message.error('加载角色数据失败')
+        })
     },
     async getList() {
       this.listLoading = true
@@ -154,15 +220,44 @@ export default {
       this.dialogType = 'new'
       this.dialogVisible = true
     },
+    handleEdit(row) {
+      this.dialogType = 'edit'
+      this.user = {
+        id: row.id,
+        account: row.account,
+        username: row.username,
+        roleIdList: row.roles
+          .map(roleName => {
+            const role = this.roles.find(r => r.code === roleName)
+            return role ? role.id : null
+          })
+          .filter(id => id !== null)
+      }
+      this.dialogVisible = true
+    },
     async confirmUser() {
       const isEdit = this.dialogType === 'edit'
-
-      if (isEdit) {
-      } else {
-        const { data } = await addUser(this.user)
-        this.user = { account: '', username: '', password: '', roleIdList: [] }
-        this.dialogVisible = false
-        this.getList()
+      try {
+        await this.$refs.userForm.validate()
+        if (isEdit) {
+          await updateUser(this.user)
+          this.dialogVisible = false
+          this.getList()
+        } else {
+          await addUser(this.user)
+          this.dialogVisible = false
+          this.getList()
+        }
+        this.user = {
+          account: '',
+          username: '',
+          password: '',
+          confirmPassword: '',
+          roleIdList: []
+        }
+      } catch (error) {
+        console.error('表单验证失败:', error)
+        return false
       }
     },
     handleDelete(row) {
