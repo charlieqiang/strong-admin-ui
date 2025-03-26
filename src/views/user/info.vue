@@ -40,7 +40,7 @@
             @click="handleEdit(row)"
             style="margin-right: 10px"
           >
-            修改
+            编辑
           </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             删除
@@ -101,7 +101,7 @@
             <el-option
               v-for="role in roles"
               :key="role.id"
-              :label="role.name"
+              :label="role.code"
               :value="role.id"
             />
           </el-select>

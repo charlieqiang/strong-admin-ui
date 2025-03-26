@@ -1,27 +1,49 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
-
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+    >
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">系统登录</h3>
       </div>
 
       <el-form-item prop="account">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input ref="account" v-model="loginForm.account" placeholder="Account" name="account" type="text"
-          tabindex="1" auto-complete="on" />
+        <el-input
+          ref="account"
+          v-model="loginForm.account"
+          placeholder="Account"
+          name="account"
+          type="text"
+          tabindex="1"
+          auto-complete="on"
+        />
       </el-form-item>
 
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
-        <el-input :key="passwordType" ref="password" v-model="loginForm.password" :type="passwordType"
-          placeholder="Password" name="password" tabindex="2" auto-complete="on" />
+        <el-input
+          :key="passwordType"
+          ref="password"
+          v-model="loginForm.password"
+          :type="passwordType"
+          placeholder="Password"
+          name="password"
+          tabindex="2"
+          auto-complete="on"
+        />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon
+            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+          />
         </span>
       </el-form-item>
 
@@ -30,20 +52,24 @@
         <span class="svg-container">
           <svg-icon icon-class="form" />
         </span>
-        <el-input v-model="loginForm.captchaCode" placeholder="Captcha" name="captchaCode" tabindex="3"
-          auto-complete="off" @keyup.enter.native="handleLogin" />
-
+        <el-input
+          v-model="loginForm.captchaCode"
+          placeholder="Captcha"
+          name="captchaCode"
+          tabindex="3"
+          auto-complete="off"
+          @keyup.enter.native="handleLogin"
+        />
       </el-form-item>
       <img :src="captchaImg" @click="getCaptcha" class="captcha-img" />
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;"
-        @click.native.prevent="handleLogin">Login</el-button>
-
-      <div class="tips">
-        <span style="margin-right:20px;">account: admin</span>
-        <span> password: any</span>
-      </div>
-
+      <el-button
+        :loading="loading"
+        type="primary"
+        style="width: 100%; margin-bottom: 30px"
+        @click.native.prevent="handleLogin"
+        >登录</el-button
+      >
     </el-form>
   </div>
 </template>
@@ -99,13 +125,16 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-            this.getCaptcha()
-          })
+          this.$store
+            .dispatch('user/login', this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            })
+            .catch(() => {
+              this.loading = false
+              this.getCaptcha()
+            })
         } else {
           console.log('error submit!!')
           return false
