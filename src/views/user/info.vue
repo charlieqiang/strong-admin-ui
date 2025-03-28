@@ -68,6 +68,25 @@
         label-width="80px"
         label-position="left"
       >
+        <div
+          v-if="dialogType === 'new'"
+          style="text-align: center; margin-bottom: 20px"
+        >
+          <el-form-item label="头像" prop="avatar">
+            <el-upload
+              class="avatar-uploader"
+              :show-file-list="false"
+              :http-request="handleAvatarUpload"
+              :before-upload="beforeAvatarUpload"
+              action="#"
+            >
+              <el-avatar
+                :src="user.avatarUrl || avatarPlaceholder"
+                :size="100"
+              />
+            </el-upload>
+          </el-form-item>
+        </div>
         <el-form-item label="账号" prop="account">
           <el-input v-model="user.account" placeholder="请输入账号" />
         </el-form-item>
@@ -118,7 +137,14 @@
 </template>
 
 <script>
-import { fetchList, addUser, deleteUser, updateUser } from '@/api/user'
+import { Message } from 'element-ui'
+import {
+  fetchList,
+  addUser,
+  deleteUser,
+  updateUser,
+  uploadAvatar
+} from '@/api/user'
 import { getRoles } from '@/api/permission'
 import Pagination from '@/components/Pagination'
 
@@ -127,6 +153,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      avatarPlaceholder: require('@/assets/avatar_placeholder/avatar-placeholder.webp'),
       tableKey: 0,
       list: null,
       total: 0,
@@ -146,7 +173,9 @@ export default {
         username: '',
         password: '',
         confirmPassword: '',
-        roleIdList: []
+        roleIdList: [],
+        avatar: '',
+        avatarUrl: ''
       },
       rules: {
         account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
@@ -182,7 +211,8 @@ export default {
         ],
         roleIdList: [
           { required: true, message: '请选择角色', trigger: 'change' }
-        ]
+        ],
+        avatar: [{ required: true, message: '请上传头像', trigger: 'change' }]
       },
       roles: []
     }
@@ -223,7 +253,9 @@ export default {
         username: '',
         password: '',
         confirmPassword: '',
-        roleIdList: []
+        roleIdList: [],
+        avatar: '',
+        avatarUrl: ''
       }
       this.dialogVisible = true
     },
@@ -233,6 +265,8 @@ export default {
         id: row.id,
         account: row.account,
         username: row.username,
+        avatar: row.avatar,
+        avatarUrl: row.avatarUrl,
         roleIdList: row.roles
           .map(roleName => {
             const role = this.roles.find(r => r.code === roleName)
@@ -241,6 +275,33 @@ export default {
           .filter(id => id !== null)
       }
       this.dialogVisible = true
+    },
+    async handleAvatarUpload({ file }) {
+      try {
+        const response = await uploadAvatar(file)
+        if (response.code === 200) {
+          this.user.avatar = response.data.path
+          this.user.avatarUrl = response.data.url
+        } else {
+          Message.error('上传失败')
+        }
+      } catch (error) {
+        Message.error('上传失败')
+      }
+    },
+    beforeAvatarUpload(file) {
+      const isImage = file.type.startsWith('image/')
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isImage) {
+        Message.error('上传头像图片只能是图片格式!')
+        return false
+      }
+      if (!isLt2M) {
+        Message.error('上传头像图片大小不能超过 2MB!')
+        return false
+      }
+      return true
     },
     async confirmUser() {
       const isEdit = this.dialogType === 'edit'
@@ -260,7 +321,9 @@ export default {
           username: '',
           password: '',
           confirmPassword: '',
-          roleIdList: []
+          roleIdList: [],
+          avatar: '',
+          avatarUrl: ''
         }
       } catch (error) {
         console.error('表单验证失败:', error)
@@ -306,3 +369,27 @@ export default {
   }
 }
 </script>
+
+<style>
+.avatar-uploader {
+  display: flex;
+  justify-content: center;
+}
+
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+</style>
